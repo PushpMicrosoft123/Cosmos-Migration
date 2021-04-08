@@ -3,7 +3,7 @@
     A script to export data from Json documents to target cosmos containers. 
     It leverages dt.exe migration tool to transfer data across containers.
 .DESCRIPTION
-    An automation script to perform below tasks
+    An automation script to perform below tasks:
     1. Deletes the target container if exists.
     2. Create a fresh container updated with json docs provided in source file path.
 .NOTES
