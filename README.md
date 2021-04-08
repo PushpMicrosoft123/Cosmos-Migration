@@ -95,5 +95,5 @@ Project consists of multiple powershell scripts, each responsible for one specif
      Initial realease
      
    # License 
-    This project is licensed under the [MIT LICENSE]()https://choosealicense.com/licenses/mit/
+    This project is licensed under the [MIT LICENSE](https://choosealicense.com/licenses/mit/)
    
