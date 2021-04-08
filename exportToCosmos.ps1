@@ -11,7 +11,7 @@
     File Name      : exportToCosmos.ps1
     Author         : Pushpdeep Gupta (pusgup@microsoft.com)
     Creation Date  : March 22, 2021
-    Prerequisites  : PowerShell V7.x, Azure Cosmos Data Migration tool (dt.exe)
+    Prerequisites  : PowerShell V7.x, Azure Cosmos Data Migration tool (dt.exe), Azure CLI
     Purpose/Change : Initial script development
                      deletingExistingContainerRequired: New flag to skip container deletion if not needed.
 #>
