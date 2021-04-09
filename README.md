@@ -6,6 +6,9 @@ Project consists of multiple powershell scripts, each responsible for one specif
     Complete pipeline is broken into smaller tasks in the form of Powershell scripts to reduce the coupling and maintain the modularity, It also helps users to run a specific task or group of tasks based on their requirement. Moreover, each script can be modified independently to make it extensible for requirements that are not achievable in their normal form.
 - ## Zero Infrastructure Cost:
      Since processing happens on a local machine, there are no cost involve in terms of infra set up. If you want to run scripts for more that 50K records, you can think of runnng it on a VM with more computing power and space.
+
+- ## Complete Automation using DevOps pipelines:
+     To trigger end to end migration each script can be added as a release task in your CI pipelines once all the dependencies are installed.
      
 - ## Understanding scripts
     #### 1. createBackUp.ps1
