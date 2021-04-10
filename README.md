@@ -85,7 +85,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
    **-dmtPath:** Path to Azure Cosmos Data Migration tool (dt.exe)
     
    ## Sample command to export json file to new container:
-   .\exportToCosmos.ps1 -userName "" -secret "" -tenantId "" -subscriptionId "" -sourceFilePath "" -targetContainerName "" -deletingExistingContainerRequired $false -              partitionKey "/_yourpartitionKey" -cosmosConnectionString "" -accountName "" -resourceGroup "" -databaseName "" -requestUnit 4000 -dmtPath ".\dt1.8.3\drop\dt.exe"
+   .\exportToCosmos.ps1 -userName "" -secret "" -tenantId "" -subscriptionId "" -sourceFilePath "" -targetContainerName "" -deletingExistingContainerRequired $false -             partitionKey "/_yourpartitionKey" -cosmosConnectionString "" -accountName "" -resourceGroup "" -databaseName "" -requestUnit 4000 -dmtPath ".\dt1.8.3\drop\dt.exe"
    
    # Dependencies
    - Azure Data Migration tool is required to transfer data between source and target. Download [here](https://docs.microsoft.com/en-us/azure/cosmos-db/import-data). Go to            installation section and download pre-compiled binary. Use dt.exe path as an input for dmtPath param in the scripts.
