@@ -15,7 +15,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
     This backUp script aims to create a backup container before performing any migration or data updates to allow roll backs in case of errors.
     Run this script to create a back-Up container for your Cosmos Document DB container.
     #### Parameters:
-    **-cosmosConnectionString:** your cosmos db connection string. Please append database name to connection string before passing. Your patter should be : {cosmos connection string from Azure portal};Database=<yourDBname>
+    **-cosmosConnectionString:** your cosmos db connection string. Please append database name to connection string before passing. Your patter should be : {cosmos connection string from Azure portal};Database={yourDBname}
     **-collectionName:** source collection/container name for which back-Up has to be created.
     **-backupCollection:** provide new collection name for your back-Up container.
     **-dmtPath:** Path to Azure Cosmos Data Migration tool (dt.exe)
