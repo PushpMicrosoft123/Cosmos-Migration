@@ -7,7 +7,7 @@
     1. Deletes the target container if exists.
     2. Create a fresh container updated with json docs provided in source file path.
 .NOTES
-    Version        : 1.1
+    Version        : 1.0
     File Name      : exportToCosmos.ps1
     Author         : Pushpdeep Gupta (pusgup@microsoft.com)
     Creation Date  : March 22, 2021

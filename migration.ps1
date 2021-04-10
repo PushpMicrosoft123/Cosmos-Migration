@@ -11,7 +11,7 @@
     5. Once migrated, new file with updated records is created in the same running folder, and named as "migrated-file.json"
 
 .NOTES
-    Version        : 1.1
+    Version        : 1.0
     File Name      : migration.ps1
     Author         : Pushpdeep Gupta (pusgup@microsoft.com)
     Creation Date  : March 22, 2021
