@@ -70,9 +70,16 @@ Write-Host "Import Competed. Imported file location: $($importedFileLocation)"
 Write-Host "Loading records..."
 #Property remapping
 $discardedIds = ''
+$updatedRecordCount = 0
 $json = Get-Content $importedFileLocation  | Out-String | ConvertFrom-Json
-$filteredJson = $json | Where-Object {$_.$filterProperty -eq $filterPropertyValue}
-Write-Host "Updating properties of $($json.Length) Documents ..."
+if([string]::IsNullOrEmpty($filterProperty)){
+    $filteredJson =  $json
+}
+else {
+    $filteredJson =  $json | Where-Object {$_.$filterProperty -eq $filterPropertyValue}
+}
+
+Write-Host "Updating properties of $($filteredJson.Length) Documents ..."
 foreach($item in $filteredJson) {   
     try {
         #Source
