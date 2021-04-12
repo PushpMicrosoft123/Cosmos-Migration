@@ -25,7 +25,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
     .\createBackUp.ps1 -cosmosConnectionString "" -backupCollection "Backup_3"  -collectionName "" -dmtPath ".\dt1.8.3\drop\dt.exe"
     
     #### 2. migration.ps1
-    Core powershell script that loads your documnets in on your machine into a single Json file to transform your data from old state to new state. Below transformation can be         performed on your documents
+    Core powershell script that loads your documents on your machine/DevOps Agents into a single Json file to transform your data from old state to new state. Below transformation can be         performed on your documents
     1. Add new key-value pairs.
     2. Edit existing key-value pairs.
     3. Copy values from one key to another within your Json document(Supports linear copy, array to array copy and nested structures with depth as 100).
