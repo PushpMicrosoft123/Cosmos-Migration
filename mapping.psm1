@@ -19,26 +19,35 @@ function SetValueBasedOnInputs {
         $targetProperty,
         $sourceValue,
         $cdt,
+        $delTarget,
         $dt,
         $kv
     )
 
     if ($cdt) {
-        if($dt -eq "array"){
-            $newDataTypeItem = New-Object System.Collections.Generic.List[System.Object]
-            if($keepOriginalValue){                       
-                       if([string]::IsNullOrEmpty($sourceValue)){
-                           $targetObject.$targetProperty = $newDataTypeItem
-                       }
-                       else{
-                           $newDataTypeItem.Add($sourceValue)
-                           $targetObject.$targetProperty = $newDataTypeItem
-                       }
-            }
-            else{
-                $targetObject.$targetProperty = $newDataTypeItem
-            }
+        switch ($dt) {
+            "array" { $newDataTypeItem = New-Object System.Collections.Generic.List[System.Object]
+                if($kv){                       
+                           if([string]::IsNullOrEmpty($sourceValue)){
+                               $targetObject.$targetProperty = $newDataTypeItem
+                           }
+                           else{
+                               $newDataTypeItem.Add($sourceValue)
+                               $targetObject.$targetProperty = $newDataTypeItem
+                           }
+                }
+                else{
+                    $targetObject.$targetProperty = $newDataTypeItem
+                }
+              }
+              "string"{ $targetObject.$targetProperty = $kv ? [string]$sourceValue : "" }
+              "int"{$targetObject.$targetProperty = $kv ? [System.Convert]::ToInt64($sourceValue,10) : ""}
+              "decimal"{$targetObject.$targetProperty = $kv ? [System.Convert]::ToDecimal($sourceValue) : ""}
+            Default { throw [System.InvalidOperationException] "Data type not supported. Please send array, string or number"}
         }
+    }
+    elseif ($delTarget) {
+        $targetObject.PSObject.properties.remove($targetProperty)
     }
     else{
         $targetObject.$targetProperty = $sourceValue
@@ -52,6 +61,7 @@ function GetorSetPropertyValues {
         $sv,
         $copyValue,
         $changeDataType,
+        $deleteTarget,
         $dataType,
         $keepOriginalValue,
         $property,
@@ -75,11 +85,11 @@ function GetorSetPropertyValues {
                                 #$spItem.$prop = $null
                             }
                             if($fr){
-                                SetValueBasedOnInputs -sourceValue $sv[$mappingCount] -targetObject $spItem  -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue
+                                SetValueBasedOnInputs -sourceValue $sv[$mappingCount] -targetObject $spItem  -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue -delTarget $deleteTarget
                             }
                             else{
                                 $fv = [string]::IsNullOrEmpty($spItem.$prop) ? $sv[$mappingCount] : $spItem.$prop
-                                SetValueBasedOnInputs -sourceValue $fv -targetObject $spItem -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue
+                                SetValueBasedOnInputs -sourceValue $fv -targetObject $spItem -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue -delTarget $deleteTarget
                             }
                             $mappingCount++
                         }
@@ -92,11 +102,11 @@ function GetorSetPropertyValues {
                                 }
 
                                 if($fr){
-                                    SetValueBasedOnInputs -sourceValue $sv -targetObject $spI -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue
+                                    SetValueBasedOnInputs -sourceValue $sv -targetObject $spI -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue -delTarget $deleteTarget
                                 }
                                 else{
                                     $fvI = [string]::IsNullOrEmpty($spI.$prop) ? $sv : $spI.$prop
-                                    SetValueBasedOnInputs -sourceValue $fvI -targetObject $spI -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue
+                                    SetValueBasedOnInputs -sourceValue $fvI -targetObject $spI -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue -delTarget $deleteTarget
                                 }
                             }                            
                         }

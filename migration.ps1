@@ -46,6 +46,8 @@ Write-Host "Preparing update varibales from input.json"
 $inputJson = Get-Content $inputJsonPath | Out-String | ConvertFrom-Json
 $inputParameter = [InputParameter]($inputJson)
 $changeDataType = $inputParameter.command -eq "TypeConversion"
+$deleteTargetProperty = $inputParameter.command -eq "DeleteTarget"
+$copyToTarget = $true
 
 # Get current timestamp
 $day = Get-Date -Format "dd"
@@ -92,7 +94,8 @@ Write-Host "Updating $($filteredJson.Length) Documents ..."
 
 foreach($item in $filteredJson) {   
     try {
-        # If Target property valus is provided.
+        if(!$deleteTargetProperty){
+            # If Target property valus is provided.
         if(![string]::IsNullOrEmpty($inputParameter.targetPropertyConstantValue)){
             $sv = $inputParameter.targetPropertyConstantValue  
             
@@ -103,12 +106,14 @@ foreach($item in $filteredJson) {
             $sv =  GetorSetPropertyValues -item $item -sv $null -copyValue $false -changeDataType $false -dataType "" -keepOriginalValue $false -property $inputParameter.sourceProperty -fr $inputParameter.forceReplace 
         } 
 
+        }
+
         if($null -eq $sv){
             $sv = ''
         }
         
-
-        $sv = GetorSetPropertyValues -item $item -sv $sv -copyValue $true -changeDataType $changeDataType -dataType $inputParameter.dataType -keepOriginalValue $inputParameter.keepTargetValueAfterDataTypeChange -property $inputParameter.targetProperty -fr $inputParameter.forceReplace
+        # Update Target
+        $sv = GetorSetPropertyValues -item $item -sv $sv -copyValue $copyToTarget -changeDataType $changeDataType -dataType $inputParameter.dataType -keepOriginalValue $inputParameter.keepTargetValueAfterDataTypeChange -property $inputParameter.targetProperty -fr $inputParameter.forceReplace -deleteTarget $deleteTargetProperty
         $updatedRecordCount++     
     }
     catch {
