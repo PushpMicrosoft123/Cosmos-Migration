@@ -3,7 +3,7 @@ Cosmos data migration project aims to support legacy data by solving migration c
 # Description
 Project consists of multiple powershell scripts, each responsible for one specific operation, and together they form a pipeline of tasks to complete migration. 
 - ## Modularity: 
-    Complete pipeline is broken into smaller tasks in the form of Powershell scripts to reduce the coupling and maintain the modularity, It also helps users to run a specific task or group of tasks based on their requirement. Moreover, each script can be modified independently to make it extensible for requirements that are not achievable in their normal form.
+    Complete automation is broken into smaller tasks in the form of Powershell scripts to reduce the coupling and maintain the modularity, It also helps users to run a specific task or group of tasks based on their requirement. Moreover, each script can be modified independently to make it extensible for requirements that are not achievable in their normal form.
 - ## Zero Infrastructure Cost:
      Since processing happens on a local machine, there are no cost involve in terms of infra set up. If you want to run scripts for more that 50K records, you can think of runnng it on a VM with more computing power and space.
 
@@ -25,7 +25,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
     .\createBackUp.ps1 -cosmosConnectionString "" -backupCollection "Backup_3"  -collectionName "" -dmtPath ".\dt1.8.3\drop\dt.exe"
     
     #### 2. migration.ps1
-    Core powershell script that loads your documnets in on your machine into a single Json file to transform your data from old state to new state. Below transformation can be         performed on your documents
+    Core powershell script that loads your documents on your machine/DevOps Agents into a single Json file to transform your data from old state to new state. Below transformation can be         performed on your documents
     1. Add new key-value pairs.
     2. Edit existing key-value pairs.
     3. Copy values from one key to another within your Json document(Supports linear copy, array to array copy and nested structures with depth as 100).
@@ -102,4 +102,4 @@ Project consists of multiple powershell scripts, each responsible for one specif
      
    # License 
     This project is licensed under the [MIT LICENSE](https://choosealicense.com/licenses/mit/)
-   
+  
