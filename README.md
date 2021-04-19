@@ -1,4 +1,4 @@
-Cosmos data migration project aims to support legacy data by solving migration challenges that can occur due to non-schema(NoSQL) nature of Document DB. It provides smooth and automated way of updating legacy documents in NoNSQL database (currently supported Cosmos DocumentDB).
+Cosmos document DB migration aims to support legacy data by solving migration challenges that can occur due to non-schema nature of Document DB. It provides smooth and automated way of updating legacy documents in NoSQL database (currently supported Cosmos DocumentDB).
 
 # Description
 Project consists of multiple powershell scripts, each responsible for one specific operation, and together they form a pipeline of tasks to complete migration. 
