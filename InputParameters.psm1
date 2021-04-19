@@ -21,7 +21,7 @@ class InputParameter {
     [string]$targetProperty
     [System.Object]$targetPropertyConstantValue
     [string]$dataType
-    [string]$keepTargetValueAfterDataTypeChange
+    [bool]$keepTargetValueAfterDataTypeChange
     [bool]$forceReplace
     [string]$filterProperty
     [string]$filterPropertyValue

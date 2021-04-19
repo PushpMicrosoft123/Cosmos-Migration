@@ -1,11 +1,11 @@
 {
-    "command": "CopyToTarget",
-    "sourceProperty":"MaterialInformation[].DeliveryNote[].AddTargetTest",
-    "targetProperty":"MaterialInformation[].DeliveryNote[].AddTargetTestNew",
+    "command": "DeleteTarget",
+    "sourceProperty":"",
+    "targetProperty":"MaterialInformation[].DeliveryNote[].AddTargetTest",
     "targetPropertyConstantValue":"",
-    "dataType":"array",
-    "keepTargetValueAfterDataTypeChange":true,
-    "forceReplace": false,
+    "dataType":"",
+    "keepTargetValueAfterDataTypeChange":"true",
+    "forceReplace": "false",
     "filterProperty":"",
     "filterPropertyValue":""
 }
