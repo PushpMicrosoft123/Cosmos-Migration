@@ -27,7 +27,7 @@ param (
 #Add current epoch time in back up collection name
 $epochTime = Get-Date (Get-Date).ToUniversalTime() -UFormat %s
 $finalBackUpCollection = [string]::IsNullOrEmpty($backupCollection) ? $collectionName + $epochTime : $backupCollection
-Write-Host " Backup in progress. Backup name: $($finalBackUpCollection)"
+Write-Host " Backup in progress: $($finalBackUpCollection)"
 $importArgs = "/s:DocumentDB /s.ConnectionString:""$($cosmosConnectionString)"" /s.Collection:""$($collectionName)"" /t:DocumentDB /t.ConnectionString:""$($cosmosConnectionString)"" /t.Collection:""$($finalBackUpCollection)"" /t.PartitionKey:/_partitionKey /t.CollectionThroughput:4000"
 Start-Process -NoNewWindow -Wait -FilePath $dmtPath -ArgumentList $importArgs
-Write-Host "Backup Completed. Container: $($finalBackUpCollection)"
+Write-Host "Backup Completed : $($finalBackUpCollection)"
