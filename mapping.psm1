@@ -5,18 +5,55 @@
     Script loads source property values to update the target values.
 
 .NOTES
-    Version        : 1.0
+    Version        : 1.1
     File Name      : mapping.psm1
     Author         : Pushpdeep Gupta (pusgup@microsoft.com)
     Creation Date  : March 22, 2021
     Prerequisites  : PowerShell V7.x
     Purpose/Change : Initial script development
+                     Added a new Method "SetValueBasedOnInputs" for updating values based on user inputs.  
 #>
+function SetValueBasedOnInputs {
+    param (
+        $targetObject,
+        $targetProperty,
+        $sourceValue,
+        $cdt,
+        $dt,
+        $kv
+    )
+
+    if ($cdt) {
+        if($dt -eq "array"){
+            $newDataTypeItem = New-Object System.Collections.Generic.List[System.Object]
+            if($keepOriginalValue){                       
+                       if([string]::IsNullOrEmpty($sourceValue)){
+                           $targetObject.$targetProperty = $newDataTypeItem
+                       }
+                       else{
+                           $newDataTypeItem.Add($sourceValue)
+                           $targetObject.$targetProperty = $newDataTypeItem
+                       }
+            }
+            else{
+                $targetObject.$targetProperty = $newDataTypeItem
+            }
+        }
+    }
+    else{
+        $targetObject.$targetProperty = $sourceValue
+    }
+    
+}
+
 function GetorSetPropertyValues {
     param (
         $item,
         $sv,
         $copyValue,
+        $changeDataType,
+        $dataType,
+        $keepOriginalValue,
         $property,
         $fr
     ) 
@@ -38,10 +75,11 @@ function GetorSetPropertyValues {
                                 #$spItem.$prop = $null
                             }
                             if($fr){
-                                $spItem.$prop = $sv[$mappingCount]
+                                SetValueBasedOnInputs -sourceValue $sv[$mappingCount] -targetObject $spItem  -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue
                             }
                             else{
-                                $spItem.$prop = [string]::IsNullOrEmpty($spItem.$prop) ? $sv[$mappingCount] : $spItem.$prop
+                                $fv = [string]::IsNullOrEmpty($spItem.$prop) ? $sv[$mappingCount] : $spItem.$prop
+                                SetValueBasedOnInputs -sourceValue $fv -targetObject $spItem -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue
                             }
                             $mappingCount++
                         }
@@ -49,18 +87,16 @@ function GetorSetPropertyValues {
                      else {
                         foreach ($spI in $sp) {
                             if($null -ne $spI){
-                                #UpdateValue -f $fr -sourceObject $spI -property $prop -value $sv
-                                #$spI.$prop = $sv
                                 if($spI.PSobject.Properties.Name -notcontains $prop){
                                     $spI | Add-Member -MemberType NoteProperty -Name $prop -Value $null
-                                    #$spI.$prop = $null
                                 }
 
                                 if($fr){
-                                    $spI.$prop = $sv
+                                    SetValueBasedOnInputs -sourceValue $sv -targetObject $spI -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue
                                 }
                                 else{
-                                    $spI.$prop = [string]::IsNullOrEmpty($spI.$prop) ? $sv : $spI.$prop
+                                    $fvI = [string]::IsNullOrEmpty($spI.$prop) ? $sv : $spI.$prop
+                                    SetValueBasedOnInputs -sourceValue $fvI -targetObject $spI -targetProperty $prop -cdt $changeDataType -dt $dataType -kv $keepOriginalValue
                                 }
                             }                            
                         }
@@ -80,7 +116,7 @@ function GetorSetPropertyValues {
                     }
                      #UpdateValue -f $fr -sourceObject $sp -property $prop -value $sv
                  }
-             }
+             }             
              else{
                  $sv = $sp.$prop
              }

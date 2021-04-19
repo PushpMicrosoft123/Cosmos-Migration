@@ -11,7 +11,7 @@
     5. Once migrated, new file with updated records is created in the same running folder, and named as "migrated-file.json"
 
 .NOTES
-    Version        : 1.0
+    Version        : 1.1
     File Name      : migration.ps1
     Author         : Pushpdeep Gupta (pusgup@microsoft.com)
     Creation Date  : March 22, 2021
@@ -20,7 +20,10 @@
                      Moving backUp creation code to new powershell script to reduce coupling.
                      New parameter for providing imported file location if you want to skip downlaod from Cosmos.
                      importFromCosmosRequired: New flag to skip download in case not required and file is passed through importedFileLocation.
+                     Input parameters related to josn updates have been moved to josn file. Please use $inputJsonPath to provide update parameters.
 #>
+
+Using module .\InputParameters.psm1
 [CmdletBinding()]
 param (
     [string] $cosmosConnectionString,
@@ -30,16 +33,19 @@ param (
     [string] $directoryToStoreMigratedFiles,
     [bool] $importFromCosmosRequired,
     [string] $importedFileLocation,
-    [string] $sourceProperty,
-    [string] $targetProperty,
-    [string] $targetPropertyValue,
-    [string] $filterProperty,
-    [string] $filterPropertyValue,
+    [string] $inputJsonPath,
     [bool] $forceReplace, 
     [string] $folderPrefix
 )
 
+
 Import-Module ".\mapping.psm1"
+
+# Preparing Update variables
+Write-Host "Preparing update varibales from input.json"
+$inputJson = Get-Content $inputJsonPath | Out-String | ConvertFrom-Json
+$inputParameter = [InputParameter]($inputJson)
+$changeDataType = $inputParameter.command -eq "TypeConversion"
 
 # Get current timestamp
 $day = Get-Date -Format "dd"
@@ -58,9 +64,8 @@ New-Item -ItemType Directory -Force -Path $basePath
 $importedFileLocation = $importFromCosmosRequired ? "$($directoryToStoreMigratedFiles)\$($appendedFolder)\imported-file.json" : $importedFileLocation
 $migratedFileLocation = "$($directoryToStoreMigratedFiles)\$($appendedFolder)\migrated-file.json"
 
+# Run migration tool to download documents from Source DB to json file in migration directory.
 if($importFromCosmosRequired){
-#Import documents into single json file from source Cosmos DB
-# Run migration tool to donlaod documents in migration directory.
 Write-Host "Importing Backup files for migration..."
 $importArgs = "/s:DocumentDB /s.ConnectionString:""$($cosmosConnectionString)"" /s.Collection:""$($backupCollection)"" /t:JsonFile /t.File:""$($importedFileLocation)"""
 Start-Process -NoNewWindow -Wait -FilePath $dmtPath -ArgumentList $importArgs
@@ -68,10 +73,14 @@ Write-Host "Import Competed. Imported file location: $($importedFileLocation)"
 }
 
 Write-Host "Loading records..."
-#Property remapping
+
+# Update documents
 $discardedIds = ''
 $updatedRecordCount = 0
 $json = Get-Content $importedFileLocation  | Out-String | ConvertFrom-Json
+
+Write-Host "Total Documents: $($json.Length)"
+
 if([string]::IsNullOrEmpty($filterProperty)){
     $filteredJson =  $json
 }
@@ -79,22 +88,27 @@ else {
     $filteredJson =  $json | Where-Object {$_.$filterProperty -eq $filterPropertyValue}
 }
 
-Write-Host "Updating properties of $($filteredJson.Length) Documents ..."
+Write-Host "Updating $($filteredJson.Length) Documents ..."
+
 foreach($item in $filteredJson) {   
     try {
-        #Source
-        if(![string]::IsNullOrEmpty($targetPropertyValue)){
-            $sv = $targetPropertyValue  
+        # If Target property valus is provided.
+        if(![string]::IsNullOrEmpty($inputParameter.targetPropertyConstantValue)){
+            $sv = $inputParameter.targetPropertyConstantValue  
             
         }
-        else{
-            $sv =  GetorSetPropertyValues -item $item -sv $null -copyValue $false -property $sourceProperty -fr $forceReplace
+                
+        # If source property is not null
+        elseif(![string]::IsNullOrEmpty($inputParameter.sourceProperty)){
+            $sv =  GetorSetPropertyValues -item $item -sv $null -copyValue $false -changeDataType $false -dataType "" -keepOriginalValue $false -property $inputParameter.sourceProperty -fr $inputParameter.forceReplace 
         } 
+
         if($null -eq $sv){
             $sv = ''
-        }   
+        }
+        
 
-        $sv = GetorSetPropertyValues -item $item -sv $sv -copyValue $true -property $targetProperty -fr $forceReplace
+        $sv = GetorSetPropertyValues -item $item -sv $sv -copyValue $true -changeDataType $changeDataType -dataType $inputParameter.dataType -keepOriginalValue $inputParameter.keepTargetValueAfterDataTypeChange -property $inputParameter.targetProperty -fr $inputParameter.forceReplace
         $updatedRecordCount++     
     }
     catch {
