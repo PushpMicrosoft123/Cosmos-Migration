@@ -40,6 +40,66 @@ Project consists of multiple powershell scripts, each responsible for one specif
     **-directoryToStoreMigratedFiles:** provide working directory that script will use to store documents imported from back-Up container.
     **-importFromCosmosRequired:** a boolean flag to skip import operation. Pass $false/$true as required.
     **-importedFileLocation:** a target json file path where all the documents will be loaded in the form of array.
+    **-folderPrefix:** optional prefix literal used by script to create a unique folder in working directory.
+    **-inputJsonPath** json location which provides update document details. File should have below key-value pairs based on the command selected:
+    
+    **Copy from source to target:**
+    ```
+    {
+    "command": "CopyToTarget", // supported commands "TypeConversion", "AddTarget", "CopyToTarget" and "DeleteSource"
+    "sourceProperty":"K[].C[].P",
+    "targetProperty":"K[].C[].E",
+    "targetPropertyConstantValue":"",
+    "dataType":"array",
+    "keepTargetValueAfterDataTypeChange":false,
+    "forceReplace": true,
+    "filterProperty":"",
+    "filterPropertyValue":""
+    }
+    ```
+    **Data type conversion: converts Target Property Data Type:**
+    ```
+    {
+    "command": "TypeConversion", // supported commands "TypeConversion", "AddTarget", "CopyTarget" and "DeleteSource"
+    "sourceProperty":"K[].C[].P",
+    "targetProperty":"K[].C[].P",
+    "targetPropertyConstantValue":"",
+    "dataType":"array",
+    "keepTargetValueAfterDataTypeChange":true,
+    "forceReplace": false,
+    "filterProperty":"",
+    "filterPropertyValue":""
+    }
+    ```
+    **AddTarget:**
+    ```
+    {
+    "command": "TypeConversion", // supported commands "TypeConversion", "AddTarget", "CopyTarget" and "DeleteSource"
+    "sourceProperty":"",
+    "targetProperty":"K[].C[].P",
+    "targetPropertyConstantValue":100,
+    "dataType":"",
+    "keepTargetValueAfterDataTypeChange":false,
+    "forceReplace": false,
+    "filterProperty":"",
+    "filterPropertyValue":""
+    }
+    ```
+    **DeleteSource:**
+    ```
+    {
+    "command": "TypeConversion", // supported commands "TypeConversion", "AddTarget", "CopyTarget" and "DeleteSource"
+    "sourceProperty":"K[].C[].P",
+    "targetProperty":"",
+    "targetPropertyConstantValue":"",
+    "dataType":"",
+    "keepTargetValueAfterDataTypeChange":false,
+    "forceReplace": false,
+    "filterProperty":"",
+    "filterPropertyValue":""
+    }
+    ```
+    **Understanding above Keys:**
     **-sourceProperty:** If performing copy operation provide the source property name to copy value from. Please use period(.) to point nested properties. For Example:
     Sample Json:
     A
@@ -53,12 +113,13 @@ Project consists of multiple powershell scripts, each responsible for one specif
     }
     to use C as an input property the correct format is A.B[].C. Please note arrays should have square brackets appended with their name as shown B[] previously.
     
-    **-targetProperty:** If performing copy/add operation pass target property which has to be modified. follow the format mentioned for source property to pass nested properties.
-    **-targetPropertyValue:** If adding new property use this parameter to pass value to be used for the target property (supports only string). Keep it empty for copy operations.
+    **-targetProperty:** If performing copy/add operation pass target property which has to be modified. follow the format mentioned for source property to pass nested                 properties.
+    **-targetPropertyConstantValue:** If adding new property use this parameter to pass value to be used for the target property (supports only string). Keep it empty for copy          operations.
     **-filterProperty:** use this parameter to perform operation only for limited documents. Currently filter is supported on root level of Json structure.
     **-filterPropertyValue:** Value to be used for filter property.
     **-forceReplace:** Use this flag to force replace target values. If passed as $false script will not updatethe targets if there is an existing value for them.
-    **-folderPrefix:** optional prefix literal used by script to create a unique folder in working directory.
+    **-keepTargetValueAfterDataTypeChange:** enable this flag if you want to preserve source values in new data type model.
+    **-dataType:** Target data types. Supported values: "array", "string" and "number"
     
     ## Sample command for copying data from one property to another:
     .\migration.ps1 -cosmosConnectionString "" -backupCollection "Backup_3"  -collectionName "" -dmtPath ".\dt1.8.3\drop\dt.exe" -directoryToStoreMigratedFiles "" -     importFromCosmosRequired $true -importedFileLocation ".\08_04_2021_00_55_19-dev\migrated-file.json" -sourceProperty "A[].B" -targetProperty "C[].D" -targetPropertyValue "" -filterProperty "" -filterPropertyValue "" -forceReplace $false -folderPrefix "dev"
@@ -99,6 +160,8 @@ Project consists of multiple powershell scripts, each responsible for one specif
    # Version History
    - 1.0
      Initial realease
+   - 1.1 
+     Support for data type conversion.
      
    # License 
     This project is licensed under the [MIT LICENSE](https://choosealicense.com/licenses/mit/)
