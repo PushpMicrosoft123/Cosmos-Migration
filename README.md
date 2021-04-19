@@ -119,7 +119,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
     **-filterPropertyValue:** Value to be used for filter property.
     **-forceReplace:** Use this flag to force replace target values. If passed as $false script will not updatethe targets if there is an existing value for them.
     **-keepTargetValueAfterDataTypeChange:** enable this flag if you want to preserve source values in new data type model.
-    **-dataType:** Target data types. Supported values: "array", "string" and "number"
+    **-dataType:** Target data types. Supported values: "array", "string", "int" and "decimal".
     
     ## Sample command for copying data from one property to another:
     .\migration.ps1 -cosmosConnectionString "" -backupCollection "Backup_3"  -collectionName "" -dmtPath ".\dt1.8.3\drop\dt.exe" -directoryToStoreMigratedFiles "" -     importFromCosmosRequired $true -importedFileLocation ".\08_04_2021_00_55_19-dev\migrated-file.json" -sourceProperty "A[].B" -targetProperty "C[].D" -targetPropertyValue "" -filterProperty "" -filterPropertyValue "" -forceReplace $false -folderPrefix "dev"
