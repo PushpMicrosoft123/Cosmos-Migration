@@ -1,7 +1,7 @@
 {
     "command": "DeleteTarget",
     "sourceProperty":"",
-    "targetProperty":"MaterialInformation[].DeliveryNote[].AddTargetTest",
+    "targetProperty":"A[].B[].P",
     "targetPropertyConstantValue":"",
     "dataType":"",
     "keepTargetValueAfterDataTypeChange":"true",
