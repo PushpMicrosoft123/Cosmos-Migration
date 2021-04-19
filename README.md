@@ -46,7 +46,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
     **Copy from source to target:**
     ```
     {
-    "command": "CopyToTarget", // supported commands "TypeConversion", "AddTarget", "CopyToTarget" and "DeleteSource"
+    "command": "CopyToTarget", // supported commands "TypeConversion", "AddTarget", "CopyToTarget" and "DeleteTarget"
     "sourceProperty":"K[].C[].P",
     "targetProperty":"K[].C[].E",
     "targetPropertyConstantValue":"",
@@ -60,7 +60,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
     **Data type conversion: converts Target Property Data Type:**
     ```
     {
-    "command": "TypeConversion", // supported commands "TypeConversion", "AddTarget", "CopyTarget" and "DeleteSource"
+    "command": "TypeConversion",
     "sourceProperty":"K[].C[].P",
     "targetProperty":"K[].C[].P",
     "targetPropertyConstantValue":"",
@@ -74,7 +74,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
     **AddTarget:**
     ```
     {
-    "command": "TypeConversion", // supported commands "TypeConversion", "AddTarget", "CopyTarget" and "DeleteSource"
+    "command": "AddTarget",
     "sourceProperty":"",
     "targetProperty":"K[].C[].P",
     "targetPropertyConstantValue":100,
@@ -85,12 +85,12 @@ Project consists of multiple powershell scripts, each responsible for one specif
     "filterPropertyValue":""
     }
     ```
-    **DeleteSource:**
+    **DeleteTarget:**
     ```
     {
-    "command": "TypeConversion", // supported commands "TypeConversion", "AddTarget", "CopyTarget" and "DeleteSource"
-    "sourceProperty":"K[].C[].P",
-    "targetProperty":"",
+    "command": "DeleteTarget",
+    "sourceProperty":"",
+    "targetProperty":"K[].C[].P",
     "targetPropertyConstantValue":"",
     "dataType":"",
     "keepTargetValueAfterDataTypeChange":false,
