@@ -1,11 +1,10 @@
 {
-    "command": "DeleteTarget",
-    "sourceProperty":"",
-    "targetProperty":"A[].B[].P",
+    "command": "TypeConversion",
+    "sourceProperty":"A[].B",
+    "targetProperty":"A[].B",
     "targetPropertyConstantValue":"",
-    "dataType":"",
+    "dataType":"array",
     "keepTargetValueAfterDataTypeChange":"true",
     "forceReplace": "false",
-    "filterProperty":"",
-    "filterPropertyValue":""
+    "selectQuery":"Select * from c where c.Location = 'Europe'"
 }

@@ -14,6 +14,7 @@
     Prerequisites  : PowerShell V7.x, Azure Cosmos Data Migration tool (dt.exe), Azure CLI
     Purpose/Change : Initial script development
                      deletingExistingContainerRequired: New flag to skip container deletion if not needed.
+                     Loading data transfer tool as part of script execution.
 #>
 [CmdletBinding()]
 param (
@@ -21,34 +22,45 @@ param (
     [string] $secret,
     [string] $tenantId,
     [string] $subscriptionId,
-    [string] $sourceFilePath,
-    [string] $targetContainerName,
-     [bool] $deletingExistingContainerRequired,
-    [string] $partitionKey,
-    [string] $cosmosConnectionString,
     [string] $accountName,
     [string] $resourceGroup,
     [string] $databaseName,
-    [Int32] $requestUnit,
-    [string] $dmtPath
+    [string] $sourceFilePath,
+    [string] $targetContainerName,
+    [bool] $deletingExistingContainerRequired,
+    [string] $partitionKey,
+    [string] $cosmosConnectionString,
+    [Int32] $requestUnit
 )
-# Login to Azure Subscription
-az Login --service-principal --username $userName --password $secret --tenant $tenantId
 
-# set subscription 
-az account set --subscription $subscriptionId
+try {
+    # Downaloding data transfer tool if not exist
+    $dmtPath = downloadDataTransferToolIfNotExist($PSScriptRoot)
+    if ($deletingExistingContainerRequired) {
+        # Login to Azure Subscription
+        az Login --service-principal --username $userName --password $secret --tenant $tenantId
 
-if($deletingExistingContainerRequired){
-#Delete the container if exists
-Write-Host "Deleting container $($targetContainerName) if exists..."
-az cosmosdb sql container delete --account-name $accountName --database-name $databaseName --name $targetContainerName  --resource-group $resourceGroup --subscription $subscriptionId --yes -y
-Write-Host "Existing container has been deleted"
+        # set subscription 
+        az account set --subscription $subscriptionId
+
+        # Delete the container if exists
+        Write-Host "Deleting container $($targetContainerName) if exists..."
+        az cosmosdb sql container delete --account-name $accountName --database-name $databaseName --name $targetContainerName  --resource-group $resourceGroup --subscription $subscriptionId --yes -y
+        Write-Host "Delete completed"
+    }
+
+    # Upload documents from local machine to Cosmos Container
+    $exportArgs = "/s:JsonFile /s.Files:""$($sourceFilePath)"" /t:DocumentDB /t.ConnectionString:""$($cosmosConnectionString)"" /t.CollectionThroughput:""$($requestUnit)"" /t.Collection:""$($targetContainerName)"" /t.PartitionKey:""$($partitionKey)"""
+    Write-Host "Creating new container: $($targetContainerName)"
+    Write-Host "Uploading documents from $($sourceFilePath)"
+    $process = Start-Process -NoNewWindow -PassThru -Wait -FilePath $dmtPath -ArgumentList $exportArgs
+
+    if ($process.ExitCode -eq -1) {
+        throw New-Object System.Exception "BackUp stopped. Exception occoured while transferring the documents. Please verify all the input parameters."
+    }
+
+    Write-Host "Container $($targetContainerName) created with new documents from $($sourceFilePath)"
 }
-
-
-# Upload documents from local machine to Cosmos Container
-$exportArgs = "/s:JsonFile /s.Files:""$($sourceFilePath)"" /t:DocumentDB /t.ConnectionString:""$($cosmosConnectionString)"" /t.CollectionThroughput:""$($requestUnit)"" /t.Collection:""$($targetContainerName)"" /t.PartitionKey:""$($partitionKey)"""
-Write-Host "Creating new container... Uploading documents from $($sourceFilePath)..."
-Start-Process -NoNewWindow -Wait -FilePath $dmtPath -ArgumentList $exportArgs
-Write-Host "Container $($targetContainerName) created with new documents from $($sourceFilePath)"
-Write-Host "Container has been updated with new documents. Please match the documents count from backup container to newly created container. If matches migration was successful."
+catch {
+    Write-Host -ForegroundColor Red -BackgroundColor Black $_
+}
