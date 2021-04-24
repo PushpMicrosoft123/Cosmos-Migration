@@ -4,7 +4,7 @@
 .DESCRIPTION
     Powershell class that holds all input parameters required to update documents.
     Please json jaon values as needed.
-    For $command, please pass any of these parameters "TypeConversion", "AddTarget", "CopyToTarget" and "DeleteSource"
+    For $command, please pass any of these parameters "TypeConversion", "AddTarget", "CopyToTarget" and "DeleteTarget"
     $dataType can be "array", "string" or "number"
 
 .NOTES
@@ -21,8 +21,7 @@ class InputParameter {
     [string]$targetProperty
     [System.Object]$targetPropertyConstantValue
     [string]$dataType
+    [string] $selectQuery
     [bool]$keepTargetValueAfterDataTypeChange
     [bool]$forceReplace
-    [string]$filterProperty
-    [string]$filterPropertyValue
 }

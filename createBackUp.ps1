@@ -7,27 +7,50 @@
     2. Forms Unique name for backup container if not provided explicitly.
 
 .NOTES
-    Version        : 1.0
+    Version        : 1.1
     File Name      : migration.ps1
     Author         : Pushpdeep Gupta (pusgup@microsoft.com)
     Creation Date  : March 22, 2021
     Prerequisites  : PowerShell V7.x, Azure Cosmos Data Migration tool (dt.exe)
     Purpose/Change : Initial script development
+                     Removed unwanted variables.
+                     Downloading data transfer tool as part of script execution.
+                     Added mandatory/optional tags for parameters.
+                     Accepting Partition key as an input
 #>
 [CmdletBinding()]
 param (
-    [string] $cosmosConnectionString,
-    [string] $collectionName,
-    [string] $backupCollection,
-    [string] $dmtPath
+    [Parameter(Mandatory = $true)][string] $cosmosConnectionString,
+    [Parameter(Mandatory = $true)][string] $sourceContainerName,
+    [Parameter(Mandatory = $false)][string] $backupContainerName,
+    [Parameter(Mandatory = $true)][string] $partitionKey,
+    [Parameter(Mandatory= $true)][Int32] $requestUnit
 )
 
+Import-Module .\toolSetUp.psm1
 
-#Create a back-Up collection
-#Add current epoch time in back up collection name
-$epochTime = Get-Date (Get-Date).ToUniversalTime() -UFormat %s
-$finalBackUpCollection = [string]::IsNullOrEmpty($backupCollection) ? $collectionName + $epochTime : $backupCollection
-Write-Host " Backup in progress: $($finalBackUpCollection)"
-$importArgs = "/s:DocumentDB /s.ConnectionString:""$($cosmosConnectionString)"" /s.Collection:""$($collectionName)"" /t:DocumentDB /t.ConnectionString:""$($cosmosConnectionString)"" /t.Collection:""$($finalBackUpCollection)"" /t.PartitionKey:/_partitionKey /t.CollectionThroughput:4000"
-Start-Process -NoNewWindow -Wait -FilePath $dmtPath -ArgumentList $importArgs
-Write-Host "Backup Completed : $($finalBackUpCollection)"
+# Create a Back-Up container
+try {
+
+    # Downaloding data transfer tool if not exist
+    $dmtPath = downloadDataTransferToolIfNotExist($PSScriptRoot)
+
+    # Add current epoch time in back up collection name
+    $epochTime = Get-Date (Get-Date).ToUniversalTime() -UFormat %s
+    $finalBackUpCollection = [string]::IsNullOrEmpty($backupContainerName) ? $sourceContainerName + $epochTime : $backupContainerName
+    Write-Host "BackUp name $($finalBackUpCollection)"
+    Write-Host "Backup in progress.."
+    $importArgs = "/s:DocumentDB /s.ConnectionString:""$($cosmosConnectionString)"" /s.Collection:""$($sourceContainerName)"" /t:DocumentDB /t.ConnectionString:""$($cosmosConnectionString)"" /t.Collection:""$($finalBackUpCollection)"" /t.PartitionKey:""$($partitionKey)"" /t.CollectionThroughput:4000"
+
+    # execute data transfer tool
+    $process = Start-Process -NoNewWindow -PassThru -Wait -FilePath $dmtPath -ArgumentList $importArgs
+
+    if ($process.ExitCode -eq -1) {
+        throw New-Object System.Exception "BackUp stopped. Exception occoured while transferring the documents. Please verify all the input parameters."
+    }
+
+    Write-Host "Backup Completed : $($finalBackUpCollection)"
+}
+catch {
+    Write-Host -ForegroundColor Red -BackgroundColor Black $_
+}
