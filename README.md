@@ -1,11 +1,11 @@
-Cosmos document DB migration aims to support legacy data by solving migration challenges that can occur due to non-schema nature of Document DB. It provides smooth and automated way of updating legacy documents in NoSQL database (currently supported Cosmos DocumentDB).
+Cosmos Document DB migration aims to support legacy data by solving migration challenges that can occur due to it's non-schema nature. It provides smooth and automated way of updating legacy documents in NoSQL database.
 
 # Description
 Project consists of multiple powershell scripts, each responsible for one specific operation, and together they form a pipeline of tasks to complete migration. 
 - ## Modularity: 
     Complete automation is broken into smaller tasks in the form of Powershell scripts to reduce the coupling and maintain the modularity, It also helps users to run a specific task or group of tasks based on their requirement. Moreover, each script can be modified independently to make it extensible for the requirements that are not achievable in their normal form.
 - ## Zero Infrastructure Cost:
-     Since processing happens on a local machine, there are no cost involve in terms of infra set up. If you want to run scripts for more that 50K records, you can think of runnng it on a VM with more computing power and space.
+     Since processing happens on a local machine, there are no cost involve in terms of infra set up. If you want to run scripts for more that 50K records or there a space or processing limitation on your machine, you can think of runnng it on a VM with more computing power and space.
 
 - ## Complete Automation using DevOps pipelines:
      To trigger end to end migration each script can be added as a release task in your CI pipelines.
@@ -152,6 +152,9 @@ Project consists of multiple powershell scripts, each responsible for one specif
    # Dependencies
    - Azure CLI (used in exportToCosmos.ps1 script to delete target container)
    - PowerShell V7.x to run the scripts
+   
+   # Limitations:
+   - Currently supported only Cosmos Document DB for SQL API.
    
    # Author
    Pushpdeep Gupta (pushpdeepamity@gmail.com)
