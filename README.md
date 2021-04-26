@@ -8,29 +8,29 @@ Project consists of multiple powershell scripts, each responsible for one specif
      Since processing happens on a local machine, there are no cost involve in terms of infra set up. If you want to run scripts for more that 50K records, you can think of runnng it on a VM with more computing power and space.
 
 - ## Complete Automation using DevOps pipelines:
-     To trigger end to end migration each script can be added as a release task in your CI pipelines once all the dependencies are installed.
+     To trigger end to end migration each script can be added as a release task in your CI pipelines.
      
-- ## Understanding scripts
+- ## Understanding the scripts
     #### 1. createBackUp.ps1
-    This script creates a backup container before performing any migration or document updates to allow roll backs at later stages in case of errors.
+    This creates a backup container before performing any operations to allow smooth roll backs at later stages in case of errors.
     Run this script to create a back-Up container for your Cosmos Document DB container.
     #### Parameters:
     **-cosmosConnectionString:** your cosmos db connection string. Please append database name to connection string before passing. Your patter should be : {cosmos connection string from Azure portal};Database={yourDBname}
     **-sourceContainerName**: Source container to be backed-Up.
     **-backupContainerName:** provide new collection name for your back-Up container.
     **-partitionKey:** Partition key to be set for new back-Up container.
-    **Suggestion:** Once Back-Up is completed please compare the document count of original collection and Back-Up collection to ensure if back-Up was success.
+    **Note:** Once Back-Up is completed please compare the document count of original collection and Back-Up collection to ensure if back-Up was success.
     
     ## Sample command for creating back-Up:
     .\createBackUp.ps1 -cosmosConnectionString "" -backupContainerName ""  -sourceContainerName "Test" -partitionKey "/_partitionKey"
     
     #### 2. loadAndTransform.ps1
-    Core powershell script that loads Cosmos DB documents on your machine/DevOps Agents into a single Json file and transform them to new state. Below activities can be performed as part of transformation stage:
+    Core powershell script that loads Cosmos DB documents into a single Json file and transform them to new state. Below activities can be performed as part of transformation stage:
     1. Add new key-value pairs.
     2. Edit existing key-value pairs.
     3. Delete properties.
     4. Copy values from one key to another within your Json document(Supports linear copy, array to array copy and nested structures with depth as 100).
-    5. Type conversion from one data type to another. for eg: flat object to array, string to int/decimal or int/decimal to string.
+    5. Type conversion from one data type to another. for eg: custom object to array, string to int/decimal or int/decimal to string.
     6. Filter documents using select query to perform add/edit/delete/type-conversion operations on specific documents.
         
     #### Parameters:
@@ -95,8 +95,14 @@ Project consists of multiple powershell scripts, each responsible for one specif
     "selectQuery":"",
     }
     ```
-    
+   
     **Understanding above Keys:**
+    **-command:** Use this value to inform tool about the operation you want to perform. Below command can be used:
+    **1. CopyToTarget:** copy source property value to target property. Use "frceReplace" flag to overwrite value forcefully, keeping it false may skip the replacement if value already exist
+    **2.TypeConversion:** converts dta type for source and target properties. Use "dataType" property to specify the expected data type, supported values are "array", "string", "int", "decimal"
+    **3. AddTarget** Adds new property in json documents. Pease specift target property to be added, also value can be provided under "targetPropertyConstantValue".
+    **4. DeleteTarget** deletes target property from json objects.
+    
     **-sourceProperty:** If performing copy operation provide the source property name to copy value from. Please use period(.) to point nested properties. For Example:
     Sample Json:
     A
@@ -117,6 +123,8 @@ Project consists of multiple powershell scripts, each responsible for one specif
     **-forceReplace:** Use this flag to force replace target values. If passed as $false script will not updatethe targets if there is an existing value for them.
     **-keepTargetValueAfterDataTypeChange:** enable this flag if you want to preserve source values in new data type model.
     **-dataType:** Target data types. Supported values: "array", "string", "int" and "decimal".
+    **-selectQuery:** Use "selectQuery" to update specific set of documents.Keep this property empty to modify all the docuemnts. See below example for  reference:
+    "Select * from c where c.Location = 'Europe'"
     
     ## Sample command for data transformation:
     .\loadAndTransform.ps1 -cosmosConnectionString "" -sourceContainerName "" -directoryToStoreUpdatedDocuments "" -importFromCosmosRequired $true -importedFileLocation ""            -inputJsonPath ".\input.json"  -folderPrefix "dev"  
@@ -139,7 +147,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
    **-requestUnit:** Request unit to be set for new continer.
     
    ## Sample command to export json file to new container:
-   .\exportToCosmos.ps1 -userName "" -secret "" -tenantId "" -subscriptionId "" -sourceFilePath "" -targetContainerName "" -deletingExistingContainerRequired $false -   partitionKey "/_yourpartitionKey" -cosmosConnectionString "" -accountName "" -resourceGroup "" -databaseName "" -requestUnit 4000 -dmtPath ".\dt1.8.3\drop\dt.exe"
+   .\exportToCosmos.ps1 -userName "" -secret "" -tenantId "" -subscriptionId "" -sourceFilePath "" -targetContainerName "" -deletingExistingContainerRequired $true -   partitionKey "/_partitionKey" -cosmosConnectionString "" -accountName "" -resourceGroup "" -databaseName "" -requestUnit 4000
    
    # Dependencies
    - Azure CLI (used in exportToCosmos.ps1 script to delete target container)
