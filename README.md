@@ -1,7 +1,7 @@
 Cosmos Document DB migration aims to support legacy data by solving migration challenges that can occur due to it's non-schema nature. It provides smooth and automated way of updating legacy documents in NoSQL database.
 
 # Description
-Project consists of multiple powershell scripts, each responsible for one specific operation, and together they form a pipeline of tasks to complete migration. 
+Project consists of multiple powershell scripts, each responsible for one specific operation, and together they form a group of tasks to address complete migration in an automated way. 
 - ## Modularity: 
     Complete automation is broken into smaller tasks in the form of Powershell scripts to reduce the coupling and maintain the modularity, It also helps users to run a specific task or group of tasks based on their requirement. Moreover, each script can be modified independently to make it extensible for the requirements that are not achievable in their normal form.
 - ## Zero Infrastructure Cost:
