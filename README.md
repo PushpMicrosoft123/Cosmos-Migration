@@ -155,6 +155,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
    
    # Limitations:
    - Currently supported only Cosmos Document DB for SQL API.
+   - Data transfer is supported with in one Cosmos DB account.
    
    # Author
    Pushpdeep Gupta (pushpdeepamity@gmail.com)
