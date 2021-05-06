@@ -22,7 +22,7 @@ Project consists of multiple powershell scripts, each responsible for one specif
     **Note:** Once Back-Up is completed please compare the document count of original collection and Back-Up collection to ensure if back-Up was success.
     
     ## Sample command for creating back-Up:
-    .\createBackUp.ps1 -cosmosConnectionString "" -backupContainerName ""  -sourceContainerName "Test" -partitionKey "/_partitionKey"
+    .\createBackUp.ps1 -cosmosConnectionString "" -backupContainerName ""  -sourceContainerName "Test" -partitionKey "/_partitionKey" -requestUnit 2000
     
     #### 2. loadAndTransform.ps1
     Core powershell script that loads Cosmos DB documents into a single Json file and transform them to new state. Below activities can be performed as part of transformation stage:
