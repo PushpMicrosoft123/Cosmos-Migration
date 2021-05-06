@@ -77,11 +77,11 @@ try {
         Write-Host "Importing all documents for transformation.."
         # Import all the documents
         $importArgs = "/s:DocumentDB /s.ConnectionString:""$($cosmosConnectionString)"" /s.Collection:""$($sourceContainerName)"" /t:JsonFile /t.File:""$($importedFileLocation)"""
-        # $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath $dmtPath -ArgumentList $importArgs
+        $p = Start-Process -NoNewWindow -PassThru -Wait -FilePath $dmtPath -ArgumentList $importArgs
         
-        # if ($p.ExitCode -eq -1) {
-        #     throw New-Object System.Exception "Import failed. Exception occoured while transferring the documents. Please verify all the input parameters."
-        # }
+        if ($p.ExitCode -eq -1) {
+            throw New-Object System.Exception "Import failed. Exception occoured while transferring the documents. Please verify all the input parameters."
+        }
         
         Write-Host "Import Competed. File location: $($importedFileLocation)"
         if(![string]::IsNullOrEmpty($inputParameter.selectQuery)){
@@ -99,7 +99,6 @@ try {
     }
  
     Write-Host "Loading records for transformation.."
-    $importedFileLocation = "C:\Pushpdeep\POCs\Cosmos-Migration\Cosmos-Migration\24_04_2021_20_13_31-qa\migrated-file.json"
 
     # Update documents
     $discardedIds = ''
